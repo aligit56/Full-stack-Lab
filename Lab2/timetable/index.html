@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Class Timetable</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="page-shell">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">Computer Science · Fall 2026</p>
+                <h1>Weekly timetable</h1>
+                <p class="subtitle">A clear view of every class from 08:00 AM to 04:00 PM.</p>
+            </div>
+            <div class="header-mark"><span>Semester</span><strong>05</strong></div>
+        </header>
+
+        <section class="timetable-card" aria-label="Weekly class timetable">
+            <div class="table-scroll">
+                <table class="timetable">
+                    <colgroup><col class="day-column"><col span="8"></colgroup>
+                    <thead>
+                        <tr>
+                            <th class="corner"><span>DAY</span><strong>2026</strong></th>
+                            <th>08:00<small>AM</small></th>
+                            <th>09:00<small>AM</small></th>
+                            <th>10:00<small>AM</small></th>
+                            <th>11:00<small>AM</small></th>
+                            <th>12:00<small>PM</small></th>
+                            <th>01:00<small>PM</small></th>
+                            <th>02:00<small>PM</small></th>
+                            <th>03:00<small>PM</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th class="day"><strong>Mo</strong><span>Monday</span></th>
+                            <td class="class ai"><strong>Artificial Intelligence</strong><small>CS-Ms Maryam Wardah</small><em>C-205 · Shift-I</em></td>
+                            <td class="class os"><strong>Operating Systems</strong><small>CS-Ms Emaan Fatima</small><em>C-201 · Lecture Hall 01</em></td>
+                            <td class="class daa"><strong>Design and Analysis of Algorithms</strong><small>CS-Mr Junaid Nazar</small><em>C-202 · Shift-I</em></td>
+                            <td class="class algebra"><strong>Linear Algebra</strong><small>Maths-Dr Waqas Sarwar</small><em>C-301 · Shift-I</em></td>
+                            <td class="empty"></td>
+                            <td class="class management"><strong>Introduction to Management</strong><small>AUSOM-Ms Ayesha Munir</small><em>C-303 · Shift-I</em></td>
+                            <td class="empty" colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <th class="day"><strong>Tu</strong><span>Tuesday</span></th>
+                            <td class="class ai" colspan="3"><strong>Artificial Intelligence Lab</strong><small>CS-Ms Maryam Wardah</small><em>Lab 5 A Block · Shift-I</em></td>
+                            <td class="empty"></td>
+                            <td class="class algebra"><strong>Linear Algebra</strong><small>Maths-Dr Waqas Sarwar</small><em>C-203 · Shift-I</em></td>
+                            <td class="class daa"><strong>Design and Analysis of Algorithms</strong><small>CS-Mr Junaid Nazar</small><em>C-302 · Shift-I</em></td>
+                            <td class="class os"><strong>Operating Systems Lab</strong><small>CS-Ms Warda Aslam</small><em>Lecture Hall 01</em></td>
+                        </tr>
+                        <tr>
+                            <th class="day"><strong>We</strong><span>Wednesday</span></th>
+                            <td class="class daa"><strong>Design and Analysis of Algorithms</strong><small>CS-Mr Junaid Nazar</small><em>C-302 · Shift-I</em></td>
+                            <td class="empty" colspan="2"></td>
+                            <td class="class os" colspan="3"><strong>Operating Systems Lab</strong><small>CS-Ms Warda Aslam</small><em>Lab 13 C Block · 3rd Floor · Shift-I</em></td>
+                            <td class="class fswd" colspan="2"><strong>Full Stack Web Development</strong><small>CS-Mr Hafiz Obaid Ullah Khan</small><em>Lecture Hall 01</em></td>
+                        </tr>
+                        <tr>
+                            <th class="day"><strong>Th</strong><span>Thursday</span></th>
+                            <td class="empty" colspan="2"></td>
+                            <td class="class ai"><strong>Artificial Intelligence</strong><small>CS-Ms Maryam Wardah</small><em>C-202 · Shift-I</em></td>
+                            <td class="class fswd" colspan="3"><strong>Full Stack Web Development</strong><small>CS-Mr Hafiz Obaid Ullah Khan</small><em>Lab 5 A Block · Shift-I</em></td>
+                            <td class="class fswd"><strong>Full Stack Web Development</strong><small>CS-Mr Hafiz Obaid Ullah Khan</small><em>Lecture Hall 01</em></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <th class="day"><strong>Fr</strong><span>Friday</span></th>
+                            <td class="empty" colspan="2"></td>
+                            <td class="class management"><strong>Introduction to Management</strong><small>AUSOM-Ms Ayesha Munir</small><em>C-302 · Shift-I</em></td>
+                            <td class="class algebra"><strong>Linear Algebra</strong><small>Maths-Dr Waqas Sarwar</small><em>C-301 · Shift-I</em></td>
+                            <td class="class fswd" colspan="2"><strong>Full Stack Web Development</strong><small>CS-Mr Hafiz Obaid Ullah Khan</small><em>Lecture Hall 01</em></td>
+                            <td class="empty" colspan="2"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <footer class="legend"><span><i class="swatch ai"></i>Artificial Intelligence</span><span><i class="swatch os"></i>Operating Systems</span><span><i class="swatch daa"></i>Algorithms</span><span><i class="swatch algebra"></i>Mathematics</span><span><i class="swatch management"></i>Management</span><span><i class="swatch fswd"></i>Web Development</span></footer>
+        </section>
+        <p class="note">All times are shown in one-hour blocks. Scroll horizontally on smaller screens to view the complete timetable.</p>
+    </main>
+</body>
+</html>
