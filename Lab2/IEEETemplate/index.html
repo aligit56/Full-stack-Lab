@@ -36,7 +36,6 @@
             overflow: visible;
         }
 
-        /* Header Section */
         .header {
             text-align: center;
             margin-bottom: 0.3in;
@@ -74,7 +73,6 @@
             margin: 4px 0;
         }
 
-        /* Abstract */
         .abstract-section {
             margin: 0.2in 0 0.2in 0;
             padding: 0.08in 0;
@@ -102,7 +100,6 @@
             font-style: italic;
         }
 
-        /* Two Column Layout */
         .content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -117,7 +114,7 @@
             flex-direction: column;
         }
 
-        /* Sections */
+        
         .section {
             margin-bottom: 0.15in;
         }
@@ -152,7 +149,7 @@
             margin-bottom: 4px;
         }
 
-        /* Figures and Tables */
+      
         .figure {
             margin: 10px 0;
             text-align: center;
@@ -213,7 +210,7 @@
             font-style: italic;
         }
 
-        /* References */
+       
         .references-section {
             grid-column: 1 / -1;
             margin-top: 0.1in;
@@ -232,14 +229,14 @@
             text-indent: -20px;
         }
 
-        /* Citations */
+      
         .cite {
             display: inline;
             font-weight: bold;
             color: #000;
         }
 
-        /* Page Numbers */
+       
         .page-number {
             text-align: center;
             font-size: 10px;
@@ -249,7 +246,7 @@
             color: #666;
         }
 
-        /* Responsive */
+      
         @media print {
             body {
                 background: white;
@@ -336,7 +333,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
             <div class="title">
                 Advanced Techniques in Machine Learning for Real-Time Data Processing
@@ -352,7 +348,6 @@
             </div>
         </div>
 
-        <!-- Abstract -->
         <div class="abstract-section">
             <div class="abstract-title">Abstract</div>
             <div class="abstract-text">
@@ -363,9 +358,7 @@
             </div>
         </div>
 
-        <!-- Content -->
         <div class="content">
-            <!-- Column 1 -->
             <div class="column">
                 <div class="section">
                     <div class="section-title"><span class="section-number">I.</span>Introduction</div>
@@ -395,7 +388,6 @@
                 </div>
             </div>
 
-            <!-- Column 2 -->
             <div class="column">
                 <div class="section">
                     <div class="section-title"><span class="section-number">III.</span>Methodology</div>
@@ -458,7 +450,6 @@
                 </div>
             </div>
 
-            <!-- Full Width Section -->
             <div class="section" style="grid-column: 1 / -1;">
                 <div class="section-title"><span class="section-number">V.</span>Conclusion and Future Work</div>
                 <div class="section-text">
@@ -466,7 +457,6 @@
                 </div>
             </div>
 
-            <!-- References -->
             <div class="references-section">
                 <div class="section-title"><span class="section-number">VI.</span>References</div>
                 <ul class="reference-list">
@@ -484,7 +474,6 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="page-number">
             Page 1
         </div>
