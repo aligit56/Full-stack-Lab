@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .custom-navbar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            height: 100vh;
+            min-height: 100vh;
+            padding: 0;
+            align-items: flex-start;
+            background: linear-gradient(180deg, #172554 0%, #2563eb 55%, #06b6d4 100%);
+            z-index: 1030;
+        }
+
+        .custom-navbar .container {
+            display: block !important;
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 1.5rem;
+            align-items: flex-start;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        .custom-navbar .navbar-brand {
+            display: block;
+            width: 100%;
+            margin-bottom: 2rem;
+            white-space: nowrap;
+        }
+
+        .custom-navbar .navbar-collapse {
+            display: block !important;
+            width: 100%;
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+        .custom-navbar .navbar-nav {
+            display: flex !important;
+            width: 100%;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.35rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .custom-navbar .nav-item {
+            display: block;
+            width: 100%;
+        }
+
+        .custom-navbar .nav-link {
+            display: block;
+            width: 100%;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            white-space: nowrap;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .custom-navbar .nav-link:hover,
+        .custom-navbar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.18);
+        }
+
+        body {
+            margin: 0 0 0 280px;
+        }
+
+        @media (max-width: 576px) {
+            .custom-navbar {
+                width: 230px;
+            }
+
+            body {
+                margin-left: 230px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark custom-navbar fixed-start">
+<div class="container">
+<a class="navbar-brand" href="#"><i class="fas fa-code"></i> Bootstrap Tutorial</a>
+<div class="navbar-collapse" id="navbarNav">
+<ul class="navbar-nav">
+<li class="nav-item">
+<a class="nav-link active" href="#grid">Grid System</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#flexbox">Flexbox</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#components">Components</a>
+</li>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+More
+</a>
+<ul class="dropdown-menu">
+<li><a class="dropdown-item" href="#buttons">Buttons</a></li>
+<li><a class="dropdown-item" href="#cards">Cards</a></li>
+<li><hr class="dropdown-divider"></li>
+<li><a class="dropdown-item" href="#media-queries">Media Queries</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+</body>
+</html>
