@@ -27,7 +27,7 @@
                 </div>
                 <div class="nav-actions">
                     <a class="account-link" href="#account">Sign in</a>
-                    <a class="bag-link" href="#bag"><span aria-hidden="true">◇</span> Bag</a>
+                    <a class="bag-link" href="#bag"><span aria-hidden="true">◇</span> Bag <span id="bag-count">0</span></a>
                 </div>
             </div>
         </nav>
@@ -70,82 +70,15 @@
                     <p>Pieces with a purpose and a point of view. Start with the ones you'll reach for every day.</p>
                 </div>
                 <div class="category-nav" aria-label="Shop categories">
-                    <a class="category-active" href="#shop">All objects <span>04</span></a>
-                    <a href="#tableware">Tableware</a>
-                    <a href="#lighting">Lighting</a>
-                    <a href="#textiles">Textiles</a>
-                    <a href="#decor">Decor</a>
+                    <a class="category-active" data-category="" href="#shop">All objects <span id="product-count">04</span></a>
+                    <a data-category="Tableware" href="#shop">Tableware</a>
+                    <a data-category="Lighting" href="#shop">Lighting</a>
+                    <a data-category="Textiles" href="#shop">Textiles</a>
+                    <a data-category="Decor" href="#shop">Decor</a>
                 </div>
 
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 product-grid">
-                    <article class="col" id="tableware">
-                        <div class="product-card">
-                            <a class="product-image-link" href="#mug-details" aria-label="View the Still Form ceramic cup">
-                                <span class="product-tag">BESTSELLER</span>
-                                <img src="https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=900&q=85" alt="Handmade ceramic cup in a warm neutral glaze" loading="lazy">
-                            </a>
-                            <div class="product-details" id="mug-details">
-                                <div class="product-title-row"><h3>Still Form Cup</h3><span class="product-price">$28</span></div>
-                                <p>Hand-thrown stoneware <span class="color-dot clay"></span> <span class="color-dot chalk"></span></p>
-                                <div class="rating-line"><span aria-label="Rated 4.9 out of 5">★★★★★</span> 4.9 <span class="review-count">(86)</span></div>
-                                <div class="product-action">
-                                    <input class="visually-hidden cart-toggle" id="add-cup" type="checkbox" aria-label="Add Still Form Cup to bag">
-                                    <label class="btn btn-dark add-button" for="add-cup"><span class="add-copy">Add to bag</span><span class="added-copy">Added ✓</span></label>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                    <article class="col" id="lighting">
-                        <div class="product-card">
-                            <a class="product-image-link" href="#lamp-details" aria-label="View the Evening Glow table lamp">
-                                <span class="product-tag tag-new">NEW</span>
-                                <img src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=900&q=85" alt="Sculptural table lamp casting a soft warm light" loading="lazy">
-                            </a>
-                            <div class="product-details" id="lamp-details">
-                                <div class="product-title-row"><h3>Evening Glow Lamp</h3><span class="product-price">$96</span></div>
-                                <p>Brushed brass and linen <span class="color-dot brass"></span> <span class="color-dot ink"></span></p>
-                                <div class="rating-line"><span aria-label="Rated 4.8 out of 5">★★★★★</span> 4.8 <span class="review-count">(42)</span></div>
-                                <div class="product-action">
-                                    <input class="visually-hidden cart-toggle" id="add-lamp" type="checkbox" aria-label="Add Evening Glow Lamp to bag">
-                                    <label class="btn btn-dark add-button" for="add-lamp"><span class="add-copy">Add to bag</span><span class="added-copy">Added ✓</span></label>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                    <article class="col" id="textiles">
-                        <div class="product-card">
-                            <a class="product-image-link" href="#throw-details" aria-label="View the Sunday Linen throw">
-                                <span class="product-tag">MAKER PICK</span>
-                                <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=85" alt="Soft natural linen throw folded in a calm living room" loading="lazy">
-                            </a>
-                            <div class="product-details" id="throw-details">
-                                <div class="product-title-row"><h3>Sunday Linen Throw</h3><span class="product-price">$74</span></div>
-                                <p>European flax linen <span class="color-dot oat"></span> <span class="color-dot moss"></span></p>
-                                <div class="rating-line"><span aria-label="Rated 5 out of 5">★★★★★</span> 5.0 <span class="review-count">(31)</span></div>
-                                <div class="product-action">
-                                    <input class="visually-hidden cart-toggle" id="add-throw" type="checkbox" aria-label="Add Sunday Linen Throw to bag">
-                                    <label class="btn btn-dark add-button" for="add-throw"><span class="add-copy">Add to bag</span><span class="added-copy">Added ✓</span></label>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                    <article class="col" id="decor">
-                        <div class="product-card">
-                            <a class="product-image-link" href="#vase-details" aria-label="View the Quiet Shape vase">
-                                <span class="product-tag tag-limited">LIMITED RUN</span>
-                                <img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?auto=format&fit=crop&w=900&q=85" alt="Minimal handmade ceramic vase with a sculptural silhouette" loading="lazy">
-                            </a>
-                            <div class="product-details" id="vase-details">
-                                <div class="product-title-row"><h3>Quiet Shape Vase</h3><span class="product-price">$52</span></div>
-                                <p>Textured ceramic <span class="color-dot chalk"></span> <span class="color-dot clay"></span></p>
-                                <div class="rating-line"><span aria-label="Rated 4.9 out of 5">★★★★★</span> 4.9 <span class="review-count">(19)</span></div>
-                                <div class="product-action">
-                                    <input class="visually-hidden cart-toggle" id="add-vase" type="checkbox" aria-label="Add Quiet Shape Vase to bag">
-                                    <label class="btn btn-dark add-button" for="add-vase"><span class="add-copy">Add to bag</span><span class="added-copy">Added ✓</span></label>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 product-grid" id="product-grid" aria-live="polite">
+                    <p class="api-status">Loading the collection…</p>
                 </div>
                 <div class="shop-footnote"><span>Designed to be used. Made to be kept.</span><a class="quiet-link" href="#bag">Review your bag <span aria-hidden="true">↓</span></a></div>
             </div>
@@ -182,15 +115,10 @@
             <div class="container-xl bag-layout">
                 <div class="bag-main">
                     <div class="section-heading bag-heading"><div><p class="eyebrow">Your selection</p><h2>Your bag<span class="heading-period">.</span></h2></div><a class="quiet-link" href="#shop">Continue shopping <span aria-hidden="true">↗</span></a></div>
-                    <p class="empty-cart">Your bag is waiting for something lovely. <a href="#shop">Explore the collection →</a></p>
-                    <div class="cart-lines" aria-label="Selected products">
-                        <article class="cart-line cart-cup"><img src="https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=260&q=75" alt=""><div class="cart-item-copy"><h3>Still Form Cup</h3><p>Clay · Stoneware</p><label for="quantity-cup">Quantity</label><input id="quantity-cup" type="number" min="1" max="10" value="1"></div><strong>$28</strong><label class="remove-link" for="add-cup">Remove</label></article>
-                        <article class="cart-line cart-lamp"><img src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=260&q=75" alt=""><div class="cart-item-copy"><h3>Evening Glow Lamp</h3><p>Brass · Linen</p><label for="quantity-lamp">Quantity</label><input id="quantity-lamp" type="number" min="1" max="10" value="1"></div><strong>$96</strong><label class="remove-link" for="add-lamp">Remove</label></article>
-                        <article class="cart-line cart-throw"><img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=260&q=75" alt=""><div class="cart-item-copy"><h3>Sunday Linen Throw</h3><p>Oat · European flax</p><label for="quantity-throw">Quantity</label><input id="quantity-throw" type="number" min="1" max="10" value="1"></div><strong>$74</strong><label class="remove-link" for="add-throw">Remove</label></article>
-                        <article class="cart-line cart-vase"><img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?auto=format&fit=crop&w=260&q=75" alt=""><div class="cart-item-copy"><h3>Quiet Shape Vase</h3><p>Chalk · Ceramic</p><label for="quantity-vase">Quantity</label><input id="quantity-vase" type="number" min="1" max="10" value="1"></div><strong>$52</strong><label class="remove-link" for="add-vase">Remove</label></article>
-                    </div>
+                    <p class="empty-cart" id="empty-cart">Your bag is waiting for something lovely. <a href="#shop">Explore the collection →</a></p>
+                    <div class="cart-lines" id="cart-lines" aria-label="Selected products"></div>
                 </div>
-                <aside class="bag-summary"><p class="eyebrow">Next up</p><h3>Make it yours.</h3><p>Your bag is saved in this page while you browse.</p><a class="btn btn-dark checkout-button" href="#checkout">Continue to checkout <span aria-hidden="true">→</span></a><div class="summary-perks"><span>Secure checkout</span><span>Free delivery over $75</span><span>30-day easy returns</span></div></aside>
+                <aside class="bag-summary"><p class="eyebrow">Next up</p><h3>Make it yours.</h3><p>Your bag is saved between visits.</p><div class="checkout-total"><span>Subtotal</span><strong id="cart-subtotal">$0.00</strong></div><div class="checkout-total"><span>Shipping</span><strong id="cart-shipping">—</strong></div><a class="btn btn-dark checkout-button" href="#checkout">Continue to checkout <span aria-hidden="true">→</span></a><div class="summary-perks"><span>Secure checkout</span><span>Free delivery over $75</span><span>30-day easy returns</span></div></aside>
             </div>
         </section>
 
@@ -208,9 +136,9 @@
                         <div class="col-sm-5"><label class="form-label" for="postal-code">Postal code</label><input class="form-control" id="postal-code" name="postal-code" autocomplete="postal-code" required></div>
                         <div class="col-12"><label class="form-label" for="payment">Payment method</label><select class="form-select" id="payment" name="payment"><option>Credit or debit card</option><option>PayPal</option><option>Pay on delivery</option></select></div>
                     </div>
-                    <div class="checkout-total"><span>Shipping</span><strong>Complimentary over $75</strong></div>
-                    <button class="btn btn-dark place-order-button" type="button">Place your order <span aria-hidden="true">→</span></button>
-                    <p class="demo-note">Checkout preview only. No payment or personal information is submitted.</p>
+                    <div class="checkout-total"><span>Order total</span><strong id="checkout-total">$0.00</strong></div>
+                    <button class="btn btn-dark place-order-button" id="place-order" type="button">Place your order <span aria-hidden="true">→</span></button>
+                    <p class="demo-note" id="checkout-status" aria-live="polite">Demo only: no payment is processed.</p>
                 </div>
             </div>
         </section>
@@ -235,5 +163,6 @@
         <div class="container-xl footer-main"><div class="footer-brand"><a class="brand-mark" href="#top">morrow<span>.</span></a><p>Useful things. Thoughtfully found.<br>Made for the everyday.</p></div><div class="footer-links"><div><strong>Explore</strong><a href="#shop">Shop all</a><a href="#story">Our story</a><a href="#reviews">Reviews</a></div><div><strong>Help</strong><a href="#bag">Your bag</a><a href="#checkout">Checkout</a><a href="#account">Your account</a></div><div><strong>Say hello</strong><a href="mailto:hello@morrowsupply.example">Email us</a><span>Monday–Friday, 9–5</span></div></div></div>
         <div class="container-xl footer-bottom"><span>© 2026 Morrow Supply</span><span>Made with care, for everyday living.</span><a href="#top">Back to top ↑</a></div>
     </footer>
+    <script src="store.js" defer></script>
 </body>
 </html>
