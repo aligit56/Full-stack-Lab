@@ -10,6 +10,7 @@ if (!cartId) {
 const productGrid = document.querySelector("#product-grid");
 const cartLines = document.querySelector("#cart-lines");
 const checkoutStatus = document.querySelector("#checkout-status");
+const accountStatus = document.querySelector("#account-status");
 
 async function api(path, options = {}) {
   const headers = {
@@ -38,6 +39,96 @@ function money(value) {
     currency: "USD"
   }).format(value);
 }
+
+function setAccountUser(user) {
+  const loginForm = document.querySelector("#login-form");
+  const signupForm = document.querySelector("#signup-form");
+  const accountSession = document.querySelector("#account-session");
+  const accountLink = document.querySelector("#account-link");
+  loginForm.parentElement.hidden = Boolean(user);
+  signupForm.parentElement.hidden = Boolean(user);
+  accountSession.hidden = !user;
+
+  if (user) {
+    document.querySelector("#account-welcome").textContent = `Welcome, ${user.name}`;
+    document.querySelector("#account-email").textContent = user.email;
+    accountLink.textContent = `Hi, ${user.name}`;
+    accountStatus.textContent = "You are signed in.";
+  } else {
+    accountLink.textContent = "Sign in";
+  }
+}
+
+async function loadAccount() {
+  try {
+    const result = await api("/api/auth/me");
+    setAccountUser(result.user);
+  } catch (error) {
+    accountStatus.textContent = `Could not load your account: ${error.message}`;
+  }
+}
+
+function bindAccountForm(formId, endpoint, getCredentials, pendingMessage, successMessage) {
+  const form = document.querySelector(formId);
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    accountStatus.textContent = pendingMessage;
+    try {
+      const result = await api(endpoint, {
+        method: "POST",
+        body: JSON.stringify(getCredentials())
+      });
+      setAccountUser(result.user);
+      form.reset();
+      accountStatus.textContent = successMessage;
+    } catch (error) {
+      accountStatus.textContent = error.message;
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+
+bindAccountForm(
+  "#signup-form",
+  "/api/auth/signup",
+  () => ({
+    name: document.querySelector("#signup-name").value,
+    email: document.querySelector("#signup-email").value,
+    password: document.querySelector("#signup-password").value
+  }),
+  "Creating your account…",
+  "Your account is ready. You are signed in."
+);
+
+bindAccountForm(
+  "#login-form",
+  "/api/auth/login",
+  () => ({
+    email: document.querySelector("#login-email").value,
+    password: document.querySelector("#login-password").value
+  }),
+  "Signing you in…",
+  "You are signed in."
+);
+
+document.querySelector("#signout-button").addEventListener("click", async () => {
+  const button = document.querySelector("#signout-button");
+  button.disabled = true;
+  try {
+    await api("/api/auth/logout", { method: "POST" });
+    setAccountUser(null);
+    accountStatus.textContent = "You have signed out.";
+  } catch (error) {
+    accountStatus.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
 
 function showProductError(error) {
   productGrid.replaceChildren(element("p", "api-status api-status-error", `Could not load products: ${error.message}`));
@@ -245,3 +336,4 @@ document.querySelector("#place-order").addEventListener("click", async () => {
 Promise.all([loadProducts(), refreshCart()]).catch((error) => {
   checkoutStatus.textContent = `Store API error: ${error.message}`;
 });
+loadAccount();

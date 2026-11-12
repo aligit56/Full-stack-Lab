@@ -3,68 +3,16 @@ const path = require("node:path");
 const http = require("node:http");
 const { URL } = require("node:url");
 const ApiError = require("./ApiError");
-const Store = require("./Store");
+const { createStoreModule } = require("./modules/storeModule");
 
 const MAX_BODY_SIZE = 64 * 1024;
-const productFields = ["name", "price", "category", "description", "image"];
+const AUTH_COOKIE_NAME = "morrow_session";
 const staticFiles = {
   "/": ["index.html", "text/html; charset=utf-8"],
   "/index.html": ["index.html", "text/html; charset=utf-8"],
   "/style.css": ["style.css", "text/css; charset=utf-8"],
   "/store.js": ["store.js", "text/javascript; charset=utf-8"]
 };
-
-function validateProduct(body, { partial = false } = {}) {
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    throw ApiError.badRequest("Request body must be a JSON object");
-  }
-  const product = {};
-  for (const field of productFields) {
-    if (!Object.prototype.hasOwnProperty.call(body, field)) {
-      if (!partial) throw ApiError.badRequest(`${field} is required`);
-      continue;
-    }
-    const value = body[field];
-    if (field === "price") {
-      if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
-        throw ApiError.badRequest("price must be a non-negative number");
-      }
-      product.price = value;
-    } else {
-      if (typeof value !== "string" || value.trim() === "") {
-        throw ApiError.badRequest(`${field} must be a non-empty string`);
-      }
-      product[field] = value.trim();
-    }
-  }
-  return product;
-}
-
-function validateCustomer(body) {
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    throw ApiError.badRequest("Request body must be a JSON object");
-  }
-  const fields = ["firstName", "lastName", "email", "address", "city", "postalCode", "payment"];
-  const customer = {};
-  for (const field of fields) {
-    const value = body[field];
-    if (typeof value !== "string" || value.trim() === "") {
-      throw ApiError.badRequest(`${field} is required`);
-    }
-    customer[field] = value.trim();
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) {
-    throw ApiError.badRequest("email must be valid");
-  }
-  return customer;
-}
-
-function validateObject(body) {
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    throw ApiError.badRequest("Request body must be a JSON object");
-  }
-  return body;
-}
 
 function readJsonBody(request) {
   const contentLength = Number(request.headers["content-length"]);
@@ -123,13 +71,33 @@ function getCartId(request) {
   return cartId;
 }
 
-function sendJson(response, status, data) {
+function sendJson(response, status, data, headers = {}) {
   const body = JSON.stringify(data);
   response.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
-    "Content-Length": Buffer.byteLength(body)
+    "Content-Length": Buffer.byteLength(body),
+    ...headers
   });
   response.end(body);
+}
+
+function getAuthToken(request) {
+  const cookies = (request.headers.cookie || "").split(";");
+  const sessionCookie = cookies.map((cookie) => cookie.trim())
+    .find((cookie) => cookie.startsWith(`${AUTH_COOKIE_NAME}=`));
+  return sessionCookie ? sessionCookie.slice(AUTH_COOKIE_NAME.length + 1) : undefined;
+}
+
+function authCookie(token, { clear = false } = {}) {
+  const parts = [
+    `${AUTH_COOKIE_NAME}=${clear ? "" : token}`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+    `Max-Age=${clear ? 0 : 7 * 24 * 60 * 60}`
+  ];
+  if (process.env.NODE_ENV === "production") parts.push("Secure");
+  return parts.join("; ");
 }
 
 function serveStatic(pathname, response) {
@@ -144,7 +112,8 @@ function serveStatic(pathname, response) {
   return true;
 }
 
-function createApp({ store = new Store() } = {}) {
+function createApp({ store } = {}) {
+  const controllers = createStoreModule({ store });
   return http.createServer(async (request, response) => {
     try {
       const url = new URL(request.url, "http://localhost");
@@ -154,9 +123,40 @@ function createApp({ store = new Store() } = {}) {
       if (segments[0] !== "api") throw ApiError.notFound("Route not found");
       const resource = segments[1];
 
+      if (resource === "auth" && segments.length === 3 && segments[2] === "signup" && request.method === "POST") {
+        const session = await controllers.auth.signup(await readJsonBody(request));
+        sendJson(response, 201, { data: { user: session.user } }, {
+          "Set-Cookie": authCookie(session.token)
+        });
+        return;
+      }
+
+      if (resource === "auth" && segments.length === 3 && segments[2] === "login" && request.method === "POST") {
+        const session = await controllers.auth.login(await readJsonBody(request));
+        sendJson(response, 200, { data: { user: session.user } }, {
+          "Set-Cookie": authCookie(session.token)
+        });
+        return;
+      }
+
+      if (resource === "auth" && segments.length === 3 && segments[2] === "me" && request.method === "GET") {
+        sendJson(response, 200, {
+          data: { user: controllers.auth.me(getAuthToken(request)) }
+        });
+        return;
+      }
+
+      if (resource === "auth" && segments.length === 3 && segments[2] === "logout" && request.method === "POST") {
+        controllers.auth.logout(getAuthToken(request));
+        sendJson(response, 200, { data: { message: "Signed out" } }, {
+          "Set-Cookie": authCookie("", { clear: true })
+        });
+        return;
+      }
+
       if (resource === "products" && segments.length === 2) {
         if (request.method === "GET") {
-          const products = store.listProducts({
+          const products = controllers.products.list({
             category: url.searchParams.get("category") || undefined,
             search: url.searchParams.get("search") || undefined
           });
@@ -164,7 +164,7 @@ function createApp({ store = new Store() } = {}) {
           return;
         }
         if (request.method === "POST") {
-          const product = await store.createProduct(validateProduct(await readJsonBody(request)));
+          const product = await controllers.products.create(await readJsonBody(request));
           sendJson(response, 201, { data: product });
           return;
         }
@@ -173,25 +173,19 @@ function createApp({ store = new Store() } = {}) {
       if (resource === "products" && segments.length === 3) {
         const id = parseId(segments[2]);
         if (request.method === "GET") {
-          const product = store.getProduct(id);
-          if (!product) throw ApiError.notFound("Product not found");
+          const product = controllers.products.get(id);
           sendJson(response, 200, { data: product });
           return;
         }
         if (request.method === "PUT" || request.method === "PATCH") {
-          const attributes = validateProduct(await readJsonBody(request), {
-            partial: request.method === "PATCH"
-          });
-          const product = await store.updateProduct(id, attributes, {
+          const product = await controllers.products.update(id, await readJsonBody(request), {
             replace: request.method === "PUT"
           });
-          if (!product) throw ApiError.notFound("Product not found");
           sendJson(response, 200, { data: product });
           return;
         }
         if (request.method === "DELETE") {
-          if (!await store.deleteProduct(id)) throw ApiError.notFound("Product not found");
-          sendJson(response, 200, { data: { message: "Product deleted" } });
+          sendJson(response, 200, { data: await controllers.products.delete(id) });
           return;
         }
       }
@@ -199,20 +193,12 @@ function createApp({ store = new Store() } = {}) {
       if (resource === "cart" && segments.length === 2) {
         const cartId = getCartId(request);
         if (request.method === "GET") {
-          sendJson(response, 200, { data: store.getCart(cartId) });
+          sendJson(response, 200, { data: controllers.cart.get(cartId) });
           return;
         }
         if (request.method === "POST") {
-          const body = validateObject(await readJsonBody(request));
-          if (!Number.isSafeInteger(body.productId) || body.productId < 1) {
-            throw ApiError.badRequest("productId must be a positive integer");
-          }
-          const quantity = body.quantity === undefined ? 1 : body.quantity;
-          if (!Number.isSafeInteger(quantity) || quantity < 1 || quantity > 99) {
-            throw ApiError.badRequest("quantity must be an integer between 1 and 99");
-          }
           sendJson(response, 200, {
-            data: await store.addCartItem(cartId, body.productId, quantity)
+            data: await controllers.cart.addItem(cartId, await readJsonBody(request))
           });
           return;
         }
@@ -222,18 +208,14 @@ function createApp({ store = new Store() } = {}) {
         const cartId = getCartId(request);
         const productId = parseId(segments[3]);
         if (request.method === "PATCH") {
-          const body = validateObject(await readJsonBody(request));
-          if (!Number.isSafeInteger(body.quantity) || body.quantity < 0 || body.quantity > 99) {
-            throw ApiError.badRequest("quantity must be an integer between 0 and 99");
-          }
           sendJson(response, 200, {
-            data: await store.setCartQuantity(cartId, productId, body.quantity)
+            data: await controllers.cart.setQuantity(cartId, productId, await readJsonBody(request))
           });
           return;
         }
         if (request.method === "DELETE") {
           sendJson(response, 200, {
-            data: await store.removeCartItem(cartId, productId)
+            data: await controllers.cart.removeItem(cartId, productId)
           });
           return;
         }
@@ -241,20 +223,18 @@ function createApp({ store = new Store() } = {}) {
 
       if (resource === "orders" && segments.length === 2) {
         if (request.method === "GET") {
-          sendJson(response, 200, { data: store.listOrders() });
+          sendJson(response, 200, { data: controllers.orders.list() });
           return;
         }
         if (request.method === "POST") {
-          const customer = validateCustomer(await readJsonBody(request));
-          const order = await store.createOrder(getCartId(request), customer);
+          const order = await controllers.orders.create(getCartId(request), await readJsonBody(request));
           sendJson(response, 201, { data: order });
           return;
         }
       }
 
       if (resource === "orders" && segments.length === 3 && request.method === "GET") {
-        const order = store.getOrder(parseId(segments[2]));
-        if (!order) throw ApiError.notFound("Order not found");
+        const order = controllers.orders.get(parseId(segments[2]));
         sendJson(response, 200, { data: order });
         return;
       }

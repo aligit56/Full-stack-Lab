@@ -39,6 +39,30 @@ test.after(async () => {
   fs.rmSync(temporaryDirectory, { recursive: true, force: true });
 });
 
+test("existing store files receive new seed products without replacing their data", () => {
+  const legacyPath = path.join(temporaryDirectory, "legacy-store.json");
+  fs.writeFileSync(legacyPath, JSON.stringify({
+    products: [1, 2, 3, 4].map((id) => ({
+      id,
+      name: `Legacy product ${id}`,
+      price: 10,
+      category: "Decor",
+      description: "Existing product",
+      image: "https://example.com/product.jpg"
+    })),
+    carts: { existing: { items: [] } },
+    orders: [],
+    nextProductId: 5,
+    nextOrderId: 1
+  }));
+
+  const store = new Store(legacyPath);
+  assert.equal(store.listProducts().length, 8);
+  assert.equal(store.getProduct(5).name, "Arc Stone Side Plate");
+  assert.equal(store.state.nextProductId, 9);
+  assert.deepEqual(store.state.carts, { existing: { items: [] } });
+});
+
 async function request(endpoint, method = "GET", body, headers = {}) {
   const response = await fetch(`${baseUrl}${endpoint}`, {
     method,
@@ -48,15 +72,19 @@ async function request(endpoint, method = "GET", body, headers = {}) {
     },
     body: body === undefined ? undefined : JSON.stringify(body)
   });
-  return { status: response.status, body: await response.json() };
+  return {
+    status: response.status,
+    body: await response.json(),
+    headers: response.headers
+  };
 }
 
 test("products support filters and complete CRUD with validation", async () => {
   const all = await request("/api/products");
   assert.equal(all.status, 200);
-  assert.equal(all.body.data.length, 4);
+  assert.equal(all.body.data.length, 8);
   assert.equal((await request("/api/products?category=Lighting")).body.data[0].id, 2);
-  assert.equal((await request("/api/products?search=stoneware")).body.data.length, 1);
+  assert.equal((await request("/api/products?search=stoneware")).body.data.length, 2);
 
   const created = await request("/api/products", "POST", {
     name: "Woven Basket",
@@ -67,7 +95,7 @@ test("products support filters and complete CRUD with validation", async () => {
     unexpected: "stripped"
   });
   assert.equal(created.status, 201);
-  assert.equal(created.body.data.id, 5);
+  assert.equal(created.body.data.id, 9);
   assert.equal("unexpected" in created.body.data, false);
   const id = created.body.data.id;
 
@@ -146,4 +174,58 @@ test("cart quantity, delete behavior, and standard API errors work", async () =>
   });
   assert.equal(malformed.status, 400);
   assert.match((await malformed.json()).error.message, /Malformed JSON/);
+});
+
+test("accounts support signup, login, sessions, and persisted credentials", async () => {
+  const credentials = {
+    name: "Rina Shah",
+    email: "RINA@example.com",
+    password: "example-pass-123"
+  };
+  const signup = await request("/api/auth/signup", "POST", credentials);
+  assert.equal(signup.status, 201);
+  assert.deepEqual(signup.body.data.user, {
+    id: 1,
+    name: "Rina Shah",
+    email: "rina@example.com"
+  });
+  assert.match(signup.headers.get("set-cookie"), /HttpOnly/);
+  const signupCookie = signup.headers.get("set-cookie").split(";")[0];
+  assert.equal(
+    (await request("/api/auth/me", "GET", undefined, { Cookie: signupCookie })).body.data.user.email,
+    "rina@example.com"
+  );
+  assert.equal((await request("/api/auth/signup", "POST", credentials)).status, 409);
+  assert.equal((await request("/api/auth/signup", "POST", {
+    name: "Short Password",
+    email: "short@example.com",
+    password: "short"
+  })).status, 400);
+  assert.equal((await request("/api/auth/login", "POST", {
+    email: credentials.email,
+    password: "wrong-password"
+  })).status, 401);
+
+  const logout = await request("/api/auth/logout", "POST", {}, { Cookie: signupCookie });
+  assert.equal(logout.status, 200);
+  assert.match(logout.headers.get("set-cookie"), /Max-Age=0/);
+  assert.equal(
+    (await request("/api/auth/me", "GET", undefined, { Cookie: signupCookie })).body.data.user,
+    null
+  );
+
+  await stopServer();
+  await startServer();
+  const login = await request("/api/auth/login", "POST", {
+    email: credentials.email,
+    password: credentials.password
+  });
+  assert.equal(login.status, 200);
+  assert.equal(login.body.data.user.email, "rina@example.com");
+  assert.equal("passwordHash" in login.body.data.user, false);
+  const loginCookie = login.headers.get("set-cookie").split(";")[0];
+  assert.equal(
+    (await request("/api/auth/me", "GET", undefined, { Cookie: loginCookie })).body.data.user.name,
+    "Rina Shah"
+  );
 });

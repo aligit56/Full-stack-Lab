@@ -47,6 +47,50 @@ const seedProducts = [
     tag: "LIMITED RUN",
     rating: 4.7,
     reviewCount: 19
+  },
+  {
+    id: 5,
+    name: "Arc Stone Side Plate",
+    price: 24,
+    category: "Tableware",
+    description: "Speckled stoneware · Made for everyday meals",
+    image: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=900&q=85",
+    tag: "NEW",
+    rating: 4.8,
+    reviewCount: 12
+  },
+  {
+    id: 6,
+    name: "Dusk Table Lamp",
+    price: 128,
+    category: "Lighting",
+    description: "Warm oak base · Soft cotton shade",
+    image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=900&q=85",
+    tag: "MAKER PICK",
+    rating: 4.9,
+    reviewCount: 8
+  },
+  {
+    id: 7,
+    name: "Soft Edge Cushion",
+    price: 48,
+    category: "Textiles",
+    description: "Olive · Textured recycled cotton",
+    image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=900&q=85",
+    tag: "BESTSELLER",
+    rating: 4.8,
+    reviewCount: 15
+  },
+  {
+    id: 8,
+    name: "Open Form Tray",
+    price: 32,
+    category: "Decor",
+    description: "Natural ash · A place for small things",
+    image: "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=900&q=85",
+    tag: "LIMITED RUN",
+    rating: 4.7,
+    reviewCount: 6
   }
 ];
 
@@ -58,16 +102,42 @@ class Store {
 
     if (fs.existsSync(filePath)) {
       this.state = JSON.parse(fs.readFileSync(filePath, "utf8"));
-      this.assertState();
+      if (this.state && typeof this.state === "object") {
+        if (!Array.isArray(this.state.users)) this.state.users = [];
+        if (!Number.isSafeInteger(this.state.nextUserId)) {
+          this.state.nextUserId = this.state.users.reduce((nextId, user) => (
+            Math.max(nextId, user && Number.isSafeInteger(user.id) ? user.id + 1 : nextId)
+          ), 1);
+        }
+      }
     } else {
       this.state = {
         products: seedProducts.map((product) => ({ ...product })),
         carts: {},
         orders: [],
-        nextProductId: 5,
-        nextOrderId: 1
+        users: [],
+        nextProductId: 9,
+        nextOrderId: 1,
+        nextUserId: 1,
+        catalogSeedVersion: 1
       };
       fs.writeFileSync(filePath, JSON.stringify(this.state, null, 2));
+    }
+
+    this.assertState();
+    if (!Number.isSafeInteger(this.state.catalogSeedVersion)) {
+      const productIds = new Set(this.state.products.map((product) => product && product.id));
+      for (const product of seedProducts) {
+        if (!productIds.has(product.id)) {
+          this.state.products.push({ ...product });
+          productIds.add(product.id);
+        }
+      }
+      const nextProductId = this.state.products.reduce((nextId, product) => (
+        Math.max(nextId, product && Number.isSafeInteger(product.id) ? product.id + 1 : nextId)
+      ), 1);
+      this.state.nextProductId = Math.max(this.state.nextProductId, nextProductId);
+      this.state.catalogSeedVersion = 1;
     }
   }
 
@@ -78,8 +148,10 @@ class Store {
       this.state.carts &&
       typeof this.state.carts === "object" &&
       Array.isArray(this.state.orders) &&
+      Array.isArray(this.state.users) &&
       Number.isSafeInteger(this.state.nextProductId) &&
-      Number.isSafeInteger(this.state.nextOrderId);
+      Number.isSafeInteger(this.state.nextOrderId) &&
+      Number.isSafeInteger(this.state.nextUserId);
     if (!valid) {
       throw new Error(`Invalid persistent store data in ${this.filePath}`);
     }
@@ -220,6 +292,26 @@ class Store {
   getOrder(id) {
     const order = this.state.orders.find((item) => item.id === id);
     return order ? JSON.parse(JSON.stringify(order)) : null;
+  }
+
+  findUserByEmail(email) {
+    const user = this.state.users.find((item) => item.email === email);
+    return user ? { ...user } : null;
+  }
+
+  getUserById(id) {
+    const user = this.state.users.find((item) => item.id === id);
+    return user ? { ...user } : null;
+  }
+
+  async createUser(attributes) {
+    if (this.findUserByEmail(attributes.email)) {
+      throw ApiError.conflict("An account with this email already exists");
+    }
+    const user = { id: this.state.nextUserId++, ...attributes };
+    this.state.users.push(user);
+    await this.persist();
+    return { ...user };
   }
 
   getOrCreateCart(cartId) {

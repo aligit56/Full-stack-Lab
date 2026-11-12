@@ -26,7 +26,7 @@
                     <a href="#reviews">Reviews</a>
                 </div>
                 <div class="nav-actions">
-                    <a class="account-link" href="#account">Sign in</a>
+                    <a class="account-link" id="account-link" href="#account">Sign in</a>
                     <a class="bag-link" href="#bag"><span aria-hidden="true">◇</span> Bag <span id="bag-count">0</span></a>
                 </div>
             </div>
@@ -147,10 +147,37 @@
             <div class="container-xl">
                 <div class="section-heading account-heading"><div><p class="eyebrow">A familiar place to return</p><h2>Your Morrow<br><em>account.</em></h2></div><p>Keep your details close and your favourites even closer.</p></div>
                 <div class="row g-4 account-grid">
-                    <div class="col-lg-6" id="login"><div class="account-form" role="group" aria-label="Log in"><div class="form-section-title"><span>01</span><h3>Welcome back</h3></div><label class="form-label" for="login-email">Email address</label><input class="form-control" id="login-email" name="login-email" type="email" autocomplete="email" required><label class="form-label mt-3" for="login-password">Password</label><input class="form-control" id="login-password" name="login-password" type="password" autocomplete="current-password" required><button class="btn btn-dark account-button" type="button" disabled>Sign-in service required <span aria-hidden="true">→</span></button></div></div>
-                    <div class="col-lg-6" id="signup"><div class="account-form signup-form" role="group" aria-label="Create account"><div class="form-section-title"><span>02</span><h3>Make yourself at home</h3></div><label class="form-label" for="signup-name">Your name</label><input class="form-control" id="signup-name" name="signup-name" autocomplete="name" required><label class="form-label mt-3" for="signup-email">Email address</label><input class="form-control" id="signup-email" name="signup-email" type="email" autocomplete="email" required><label class="form-label mt-3" for="signup-password">Create a password</label><input class="form-control" id="signup-password" name="signup-password" type="password" autocomplete="new-password" minlength="8" required><button class="btn btn-dark account-button" type="button" disabled>Account service required <span aria-hidden="true">→</span></button></div></div>
+                    <div class="col-lg-6">
+                        <form class="account-form" id="login-form" aria-label="Sign in">
+                            <div class="form-section-title"><span>01</span><h3>Welcome back</h3></div>
+                            <label class="form-label" for="login-email">Email address</label>
+                            <input class="form-control" id="login-email" name="email" type="email" autocomplete="email" required>
+                            <label class="form-label mt-3" for="login-password">Password</label>
+                            <input class="form-control" id="login-password" name="password" type="password" autocomplete="current-password" required>
+                            <button class="btn btn-dark account-button" type="submit">Sign in <span aria-hidden="true">→</span></button>
+                        </form>
+                    </div>
+                    <div class="col-lg-6">
+                        <form class="account-form signup-form" id="signup-form" aria-label="Create account">
+                            <div class="form-section-title"><span>02</span><h3>Make yourself at home</h3></div>
+                            <label class="form-label" for="signup-name">Your name</label>
+                            <input class="form-control" id="signup-name" name="name" autocomplete="name" maxlength="80" required>
+                            <label class="form-label mt-3" for="signup-email">Email address</label>
+                            <input class="form-control" id="signup-email" name="email" type="email" autocomplete="email" required>
+                            <label class="form-label mt-3" for="signup-password">Create a password</label>
+                            <input class="form-control" id="signup-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+                            <button class="btn btn-dark account-button" type="submit">Create account <span aria-hidden="true">→</span></button>
+                        </form>
+                    </div>
+                    <div class="col-12" id="account-session" hidden>
+                        <div class="account-form">
+                            <div class="form-section-title"><span>✓</span><h3 id="account-welcome">Welcome back</h3></div>
+                            <p id="account-email"></p>
+                            <button class="btn btn-dark account-button" id="signout-button" type="button">Sign out</button>
+                        </div>
+                    </div>
                 </div>
-                <p class="demo-note account-note">Account preview only. This static page cannot create accounts or sign you in; that requires a server.</p>
+                <p class="demo-note account-note" id="account-status" aria-live="polite">Sign in or create an account to get started.</p>
             </div>
         </section>
 
